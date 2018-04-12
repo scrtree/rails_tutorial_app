@@ -1,5 +1,5 @@
 class User < ApplicationRecord
-    attr_accessor :remember_token
+    attr_accessor :remember_me
     before_save { email.downcase! }
     validates :name,  presence: true, length: { maximum: 50 }
     VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
@@ -12,7 +12,7 @@ class User < ApplicationRecord
     # 渡された文字列のハッシュ値を返す
     def User.digest(string)
         cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST :
-                                                    BCrypt::Engine.cost
+                                                      BCrypt::Engine.cost
         BCrypt::Password.create(string, cost: cost)
     end
 
@@ -29,9 +29,9 @@ class User < ApplicationRecord
     end
 
     # 渡されたトークンがダイジェストと一致したらtrueを返す
-    def authenticated?(remember_token)
+    def authenticated?(remember_me)
         return false if remember_digest.nil?
-        BCrypt::Password.new(remember_digest).is_password?(remember_token)
+        BCrypt::Password.new(remember_digest).is_password?(remember_me)
     end
 
     # ユーザーのログイン情報を破棄する
